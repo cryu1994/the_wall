@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
   </head>
   <body>
     <div class="wrapper">
@@ -17,22 +18,39 @@
         <h1 class='text-center'>Welcome to The Wall!</h1>
       </div>
       <div class='col-xs-6 col-xs-offset-1 well'>
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            {% for message in messages %}
-              <p>{{message}}</p>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
         <h4 class='text-center'>Register</h4>
         <form action="/users" method="post">
-          <label for="name">Name: </label>
+          <label for="name">Name:
+            {% with errors = get_flashed_messages(category_filter=['name'])%}
+              {% if errors %}
+                <h4 class="error">{{ errors[0] }}</h4>
+              {% endif %}
+            {% endwith %}
+          </label>
           <input class='form-control' type="text" name="name">
-          <label for="email">Email: </label>
+          <label for="email">Email:
+            {% with errors = get_flashed_messages(category_filter=['email'])%}
+              {% if errors %}
+                <h4 class="error">{{ errors[0] }}</h4>
+              {% endif %}
+            {% endwith %}
+          </label>
           <input class='form-control' type="text" name="email">
-          <label for="password">Password: </label>
+          <label for="password">Password:
+            {% with errors = get_flashed_messages(category_filter=['passwords'])%}
+              {% if errors %}
+                <h4 class="error">{{ errors[0] }}</h4>
+              {% endif %}
+            {% endwith %}
+          </label>
           <input class='form-control' type="password" name='password'>
-          <label for="first_name">Confrim Password: </label>
+          <label for="first_name">Confrim Password:
+            {% with errors = get_flashed_messages(category_filter=['conf_password'])%}
+              {% if errors %}
+                <h4 class="error">{{ errors[0] }}</h4>
+              {% endif %}
+            {% endwith %}
+          </label>
           <input  class='form-control'type="password" name="conf_password">
           <hr>
           <button class="btn btn-success">Create User</button>
@@ -41,12 +59,24 @@
       <div class='col-xs-3 col-xs-offset-1 well'>
         <h4 class='text-center'>Login</h4>
         <form action="/users/login" method="post">
-          <label for="email">Email: </label>
-          <input class='form-control' type="text" name="email">
-          <label for="password">Password: </label>
-          <input class='form-control'type="password" name='password'>
+          <label for="email">Email:
+            {% with errors = get_flashed_messages(category_filter=["log_email"])%}
+              {% if errors %}
+              <h4 class="error">{{ errors[0] }}</h4>
+              {% endif %}
+            {% endwith %}
+          </label>
+          <input class='form-control' type="email" name="email">
+          <label for="password">Password:
+            {% with errors = get_flashed_messages(category_filter=['log_password'])%}
+              {% if errors %}
+                <h4 class="error">{{ errors[0] }}</h4>
+              {% endif %}
+            {% endwith %}
+          </label>
+          <input class='form-control' type="password" name='password'>
           <hr>
-          <button class='btn btn-success'>Login</button>
+          <input class='btn btn-success pull-right' type="submit" value="Login" role='button'/>
         </form>
       </div>
     </div>
