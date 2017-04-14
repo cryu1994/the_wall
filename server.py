@@ -5,7 +5,10 @@ import re
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 app = Flask(__name__)
+
+#imported the random password generator
 bcrypt = Bcrypt(app)
+
 app.secret_key = '1234qwer'
 mysql = MySQLConnector(app, 'thewall')
 
@@ -14,15 +17,12 @@ mysql = MySQLConnector(app, 'thewall')
 def index():
     if 'user_id' and 'first_name' in session:
         return redirect('/sueccess')
-
     return render_template('index.html')
-#we check the user info and its true or false
-#taking the user info form form the index page
 @app.route('/users', methods=['POST'])
 def create():
     #giving the request.form value to the post
     post = request.form
-    print post
+
     #checking to see if user put infomation
     if 'name' in post  and 'email' in post and 'password' in post and 'conf_password' in post:
 
@@ -56,7 +56,7 @@ def create():
 
         #if there were no errors
         if error < 1:
-            #encrypt password
+            #generate the password and take it to the database
             encrypted_password = bcrypt.generate_password_hash(password)
             #insert user into database
             query = "INSERT INTO users(name, email, password, created_at, updated_at)VALUES(:name, :email, :password, NOW(), NOW())";
@@ -66,20 +66,23 @@ def create():
                 'email': email,
                 'password': encrypted_password
                 }
+            #set the user_id as variable
             user_id = mysql.query_db(query, data)
 
-            #store user_id and first_name into session so we can use it in the success page
+            #store user_id and first_name into session so can use it in the success page
             session['user_id'] = int(user_id)
             session['name'] = name
             return redirect('/success')
-        #if there were error, then fail to load the success page
+        #if there were error, redirect to register page
         return redirect('/')
+
+#creating a login page
 @app.route('/users/login', methods=['post'])
 def login():
     #excract long -v to short -v
     post = request.form
 
-    #checking to see if user put input
+    #test for post data
     if 'email' in post and 'password' in post:
         email = escape(post['email']).lower()
         password = escape(post['password'])
@@ -92,7 +95,6 @@ def login():
         }
         user = mysql.query_db(query, data)
 
-    #if there is a user with the email
         if user:
 
 
