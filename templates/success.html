@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>success page</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- header -->
+      <div class="header">
+        <div class="btn-toorbar pull-right">
+          <div class="btn-group">
+            <a href="/logout" class='btn btn-primary pull-right'>Log Out</a>
+          </div>
+        </div>
+        <h2>Welcome {{ session['name'].title() }}</h2>
+        <hr>
+      </div>
+      <br>
+      <!-- post message -->
+      <div class="row">
+        <div class="col-xs-10 col-xs-offset-1 well">
+          <h3 class='post-head'>Post a message:</h3>
+          <form class="" action="/messages" method="post">
+            <div class='form-group'>
+              <textarea class='form-control' name="message"></textarea>
+            </div>
+            <div class="form-group">
+              <input class='btn btn-success pull-right' type="submit" value="Post Message">
+            </div>
+          </form>
+        </div>
+        <!-- post message -->
+        {% for message in messages: %}
+        <div class="row">
+          <div class="col-xs-10 col-xs-offset-1 well">
+            {% if message['author_id'] == session['user_id']: %}
+               <a href="/message/delete/{{ message['id'] }}" class='btn btn-danger pull-right del'>Delete</a>
+            {% endif %}
+            <!-- posted meaage -->
+            <p><b>{{ message['author_name']}} : {{ message['created_at']}}</b></p>
+            <p>{{ message['text'] }}</p>
+
+            {% for comment in comments: %}
+            {% if comment['message_id'] == message['id']: %}
+
+             <!-- a comment -->
+             <div class="row">
+              <div class="col-xs-11 col-xs-offset-1 well well-sm">
+              <!-- edit/delete buttons -->
+              {% if comment['author_id'] == session['user_id']: %}
+                <a href="/comment/delete/{{ comment['id'] }}" class='btn btn-danger pull-right del'>Delete</a>
+              {% endif %}
+              <!-- posted comment -->
+              <p><b>{{comment[author_name]}}:</b> {{comment['created_at']}}</p>
+              <p>{{comment['text']}}</p>
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+          <form action="/comment" method="post">
+            <input type="hidden" name="message_id" value="{{ message['id'] }}">
+            <div class="form-group">
+              <textarea class="form-control" name="text"></textarea>
+            </div>
+            <div class="group-form">
+              <input class="btn btn-success pull-right" type="submit" value="Reply">
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    </div>
+  </body>
+</html>
